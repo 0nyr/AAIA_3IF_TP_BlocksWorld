@@ -4,42 +4,43 @@
 % -- Exercice 1
 \section{Partie 1 : Modélisation du problème}
 
-Dans cette partie, on va s'intéresser à la modélisation du problème du \textit{Monde des Blocs} sous forme d'un problème de planification.
+Dans cette partie, nous nous intéressons à la modélisation du problème du \textit{Monde des Blocs} en tant que problème de planification.
 
 \subsection{Définition et déclaration des variables}
-Faire une liste itemize des variables, avec leur domaine, ainsi que leur signification:
+Voici une liste des variables utilisées, avec leur domaine et leur signification :
 
-n blocs et k piles
-Nous noterons actions(E) l'ensemble de toutes les actions possibles pour
-un état E donné.
-L'application d'une action i → j ∈ actions(E) sur un état E permet d'obtenir un nouvel état que nous noterons
-t(E, i → j).
-nous déﬁnissons le graphe d'états G = (S, A) tq:
-— S est l'ensemble des états possibles, chaque état étant une conﬁguration différente des n blocs sur les k piles ;
-— A = {(E, E') | ∃i → j ∈ actions(E), E' = t(E, i → j)}, A est l'ensemble des arcs du graphe d'états, où t(E, i → j) est l'état obtenu à partir de l'état E en appliquant l'action i → j.
+\begin{itemize}
+    \item $n$ : le nombre de blocs
+    \item $k$ : le nombre de piles
+    \item $E$ : un état donné du Monde des Blocs
+    \item $actions(E)$ : l'ensemble de toutes les actions possibles pour l'état $E$
+    \item $t(E, i \rightarrow j)$ : le nouvel état obtenu en appliquant l'action $i \rightarrow j$ à l'état $E$
+    \item $G = (S, A)$ : le graphe d'états, où $S$ est l'ensemble des états possibles et $A$ est l'ensemble des transitions entre les états
+\end{itemize}
 
 \subsection{Question 1}
 
 \textit{Combien d'actions différentes sont-elles possibles pour l'état $E_1$ ?}
 
-On a $k = 3$ piles non-vides à l'état $E_1$. Pour chaque pile, il y a $k - 1$ actions possibles : déplacer le bloc du sommet de la pile vers le sommet d'une \textit{autre} pile. On a donc $(k - 1) \times 3 = 6$ actions possibles pour l'état $E_1$.
+Supposons que l'état $E_1$ dispose de $k = 3$ piles non-vides. Chaque pile peut envoyer un bloc vers $k - 1$ autres piles. Donc, pour chaque pile, il y a $k - 1$ actions possibles. Par conséquent, le nombre total d'actions possibles pour l'état $E_1$ est $(k - 1) \times k = 6$ actions.
 
 \subsection{Question 2}
+
 \textit{Étant donné un état $E$ de $n$ blocs sur $k$ piles, quelle est la taille maximale de $actions(E)$ ?}
 
-On doit considérer le cas dans lequel il y a le plus d'actions possibles. Comme il n'y a pas d'action depuis une pile vide, on déduit que le nombre maximal d'action possible a lieu quand toutes les piles sont non-vides. On a donc $k$ piles non-vides, et pour chaque pile, on a $k - 1$ actions possibles. On a donc $k \times (k - 1)$ actions possibles.
+Pour maximiser le nombre d'actions possibles, chaque pile doit contenir au moins un bloc, permettant ainsi des déplacements de blocs entre toutes les piles. Ainsi, chaque pile peut envoyer un bloc à $k - 1$ autres piles. Le nombre total d'actions possibles est donc $k(k - 1)$.
 
 \subsection{Question 3}
 
 \textit{Étant donné un état $E$ de $n$ blocs sur $k$ piles ayant $v$ piles vides, quelle est la taille de $actions(E)$ ?}
 
-reponse a developper: (k-v)(k-1)
+Avec $v$ piles vides, il reste $k - v$ piles contenant des blocs. Chaque pile active peut envoyer un bloc à $k - 1$ autres piles, donc le nombre total d'actions est $(k-v)(k-1)$.
 
 \subsection{Question 4}
 
 \textit{Quel est l'ordre de grandeur du nombre total d'états différents possibles ?}
 
-reponse a développer: exponentiel
+Le nombre total d'états est exponentiel par rapport au nombre de blocs et de piles, car chaque bloc peut être sur l'une des $k$ piles, ce qui donne une croissance exponentielle de la complexité avec l'augmentation de $n$ et $k$.
 
 \section{Partie 2 : Définition du graphe d'états}
 
@@ -47,40 +48,40 @@ reponse a développer: exponentiel
 
 \textit{Le graphe d'états $G$ est-il orienté ?}
 
-Oui, orienté
+Oui, le graphe d'états $G$ est orienté. Chaque action menant d'un état $E$ à un état $E'$ représente un arc orienté dans le graphe.
 
 \subsection{Question 6}
 
 \textit{Quels sont les algorithmes qui peuvent être utilisés pour rechercher ce plus court chemin ?}
 
-Bellman-Ford, BFS, Dijkstra
+Plusieurs algorithmes peuvent être utilisés pour rechercher le plus court chemin, tels que Bellman-Ford, BFS et Dijkstra, en fonction des spécificités du graphe (poids, orientation, etc.).
 
 \subsection{Question 7}
 
-\textit{Quel est l'algorithme le plus efﬁcace pour rechercher ce plus court chemin ?}
+\textit{Quel est l'algorithme le plus efficace pour rechercher ce plus court chemin ?}
 
-BFS car le graph est non pondéré, donc pas besoin d'algorithmes plus complexes
+Dans le contexte d'un graphe non pondéré comme celui du Monde des Blocs, BFS (Breadth-First Search) est généralement le plus efficace car il trouve le plus court chemin en explorant uniformément autour du nœud source.
 
 \subsection{Question 8}
 
-\textit{Quelle est la complexité en temps de cet algorithme par rapport à |S| et |A| ?}
+\textit{Quelle est la complexité en temps de cet algorithme par rapport à $|S|$ et $|A|$ ?}
 
-linéaire
+La complexité temporelle de BFS est linéaire, soit O(|S| + |A|), où |S| est le nombre de sommets (états) et |A| est le nombre d'arêtes (actions) dans le graphe.
 
 \subsection{Question 9}
 
 \textit{Quelle est la complexité en temps de cet algorithme par rapport au nombre de blocs (n) et de piles (k) ?}
 
-exponentielle
+La complexité temporelle de l'algorithme par rapport au nombre de blocs (n) et de piles (k) est exponentielle, car le nombre total d'états possibles croît exponentiellement avec l'augmentation de n et k.
 
 \section{Partie 3 : Heuristiques pour le monde des blocs}
 
 \subsection{Question 10}
 
-On commence par exécuter le programme de recherche de plus court chemin pour 4 piles, et un nombre de blocs variant de 6 à 8. On obtient les résultats suivants :
+On commence par exécuter le programme de recherche de plus court chemin pour 4 piles et un nombre de blocs variant de 6 à 8. On obtient les résultats suivants :
 
 \begin{minipage}{\dimexpr\linewidth-20pt}
-    \begin{lstlisting}[language=bash, caption={Résultat de l'algorithme PageRank après convergence sur le graphe $G_2$, avec $\alpha = 0.9$ et $\epsilon = 1.0 \times 10^{-10}$.}]
+    \begin{lstlisting}[language=bash, caption={Résultats de l'exécution du programme de recherche de plus court chemin}, label={lst:plus_court_chemin_results_no_heuristics}]
         $ make run
         Enter the number of stacks: 4
         Enter the number of blocs: 6
@@ -99,50 +100,45 @@ On commence par exécuter le programme de recherche de plus court chemin pour 4 
     \end{lstlisting}
 \end{minipage}
 
-On peut observer que le nombre d'itérations et le temps d'exécution augmentent de manière exponentielle avec le nombre de blocs. Pour améliorer les performances de l'algorithme, on peut utiliser une heuristique pour guider la recherche.
+Les résultats montrent une augmentation exponentielle du nombre d'itérations et du temps d'exécution avec l'augmentation du nombre de blocs. Pour améliorer les performances de l'algorithme, on peut adopter des heuristiques adéquates. Trois heuristiques sont introduites :
 
-On introduit les heuristiques suivantes :
-— h1 : Nombre de blocs ne se trouvant pas sur la dernière pile.
-— h2 : Nombre de blocs ne se trouvant pas sur la dernière pile, plus deux fois le nombre de blocs b tels que b se
-trouve sur la dernière pile mais il devra nécessairement être enlevé de cette pile pour ajouter et/ou supprimer
-d'autres blocs sous lui.
-— h3 : Nombre de blocs de Ei ne se trouvant pas sur la dernière pile, plus le nombre de blocs se trouvant au
-dessus de chaque bloc ne se trouvant pas sur la dernière pile.
+\begin{itemize}
+    \item $h_1$ : Nombre de blocs ne se trouvant pas sur la dernière pile.
+    \item $h_2$ : Nombre de blocs ne se trouvant pas sur la dernière pile, plus deux fois le nombre de blocs $b$ tels que $b$ se trouve sur la dernière pile mais devra nécessairement être enlevé de cette pile pour ajouter et/ou supprimer d'autres blocs sous lui.
+    \item $h_3$ : Nombre de blocs de $E_i$ ne se trouvant pas sur la dernière pile, plus le nombre de blocs se trouvant au-dessus de chaque bloc ne se trouvant pas sur la dernière pile.
+\end{itemize}
 
-On dit qu'une heuristique est admissible si...
-Let δ (u, t) be the distance between u and t, i.e. The length of a shortest path. h is admissible if foreach node u, h(u) ≤ δ (u, t).
+Pour qu'une heuristique soit admissible, elle doit toujours sous-estimer le coût réel pour atteindre l'objectif. Formellement, une heuristique $h$ est admissible si pour tout état $E$, $h(E) \leq \delta (E, E')$ où $\delta (E, E')$ est la distance réelle entre $E$ et l'état cible $E'$.
 
-une heuristique h est plus informée qu'une heuristique h' si pour tout état E, h(E) ≥ h'(E), tandis que les deux heuristiques sont
-incomparables s'il existe deux états E et E' tels que h(E) < h'(E) et h(E') > h'(E')
+Une heuristique $h$ est dite plus informée qu'une heuristique $h'$ si, pour tout état $E$, $h(E) \geq h'(E)$, tandis que les deux heuristiques sont incomparables s'il existe deux états $E$ et $E'$ tels que $h(E) < h'(E)$ et $h(E') > h'(E')$.
 
 \subsection{Question 11}
 
-\textit{L'heuristique h1 est-elle admissible ?}
+\textit{L'heuristique $h_1$ est-elle admissible ?}
 
-h1 < δ, donc oui
+L'heuristique $h_1$ est admissible car le nombre de blocs ne se trouvant pas sur la dernière pile représente une limite inférieure du nombre de mouvements nécessaires pour atteindre l'état final. En effet, chaque bloc doit au moins une fois être déplacé vers la dernière pile, sous-estimant ainsi le coût réel pour atteindre l'objectif.
 
 \subsection{Question 12}
 
-h2 < δ, donc oui
+\textit{L'heuristique $h_2$ est-elle admissible ?}
 
-\textit{L'heuristique h2 est-elle admissible ?}
+L'heuristique $h_2$ est également admissible. Elle prend en compte le coût de déplacement des blocs qui sont sur la dernière pile mais doivent être déplacés pour permettre à d'autres blocs de se placer en dessous. En multipliant ce nombre par deux, on reste dans une estimation inférieure du coût réel car chaque bloc déplacé peut nécessiter plus d'un mouvement pour atteindre sa position finale.
 
 \subsection{Question 13}
 
-\textit{L'heuristique h2 est elle plus informée, moins informée, ou incomparable par rapport à l'heuristique h1 ?}
+\textit{L'heuristique $h_2$ est-elle plus informée, moins informée, ou incomparable par rapport à l'heuristique $h_1$ ?}
 
-h1 < h2 < δ, donc h2 plus informée que h1
+L'heuristique $h_2$ est plus informée que l'heuristique $h_1$. En plus de compter les blocs ne se trouvant pas sur la dernière pile, elle prend en compte le coût supplémentaire pour déplacer les blocs déjà sur la dernière pile, mais qui doivent être temporairement déplacés. Ainsi, $h_2$ fournit une meilleure estimation du coût réel et est donc plus informée.
 
 \subsection{Question 14}
 
-\textit{L'heuristique h3 est-elle admissible ?}
+\textit{L'heuristique $h_3$ est-elle admissible ?}
 
-h3 < δ, donc oui
+L'heuristique $h_3$ est admissible. Elle compte non seulement les blocs qui ne sont pas sur la dernière pile, mais aussi le nombre de blocs qui doivent être déplacés pour permettre le placement d'autres blocs. Cette mesure fournit une sous-estimation du coût réel, car elle ne prend pas en compte les déplacements multiples ni l'ordre optimal de déplacement des blocs.
 
 \subsection{Question 15}
 
-\textit{L'heuristique h3 est elle plus informée, moins informée, ou incomparable par rapport à l'heuristique h2 ?}
+\textit{L'heuristique $h_3$ est-elle plus informée, moins informée, ou incomparable par rapport à l'heuristique $h_2$ ?}
 
-h3 < h2 < δ donc h3 moins informée que h2
-
+L'heuristique $h_3$ est généralement moins informée que $h_2$. Tandis que $h_2$ compte de manière spécifique les déplacements nécessaires pour les blocs sur la dernière pile, $h_3$ se concentre sur une vue plus globale de tous les blocs qui ne sont pas à leur place. Cela peut conduire à des situations où $h_3$ sous-estime davantage le coût comparé à $h_2$, rendant $h_3$ moins informée dans de nombreux cas.
 
