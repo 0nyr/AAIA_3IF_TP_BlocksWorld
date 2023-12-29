@@ -5,3 +5,144 @@
 \section{Partie 1 : Modélisation du problème}
 
 Dans cette partie, on va s'intéresser à la modélisation du problème du \textit{Monde des Blocs} sous forme d'un problème de planification.
+
+\subsection{Définition et déclaration des variables}
+Faire une liste itemize des variables, avec leur domaine, ainsi que leur signification:
+
+n blocs et k piles
+Nous noterons actions(E) l'ensemble de toutes les actions possibles pour
+un état E donné.
+L'application d'une action i → j ∈ actions(E) sur un état E permet d'obtenir un nouvel état que nous noterons
+t(E, i → j).
+nous déﬁnissons le graphe d'états G = (S, A) tq:
+— S est l'ensemble des états possibles, chaque état étant une conﬁguration différente des n blocs sur les k piles ;
+— A = {(E, E') | ∃i → j ∈ actions(E), E' = t(E, i → j)}, A est l'ensemble des arcs du graphe d'états, où t(E, i → j) est l'état obtenu à partir de l'état E en appliquant l'action i → j.
+
+\subsection{Question 1}
+
+\textit{Combien d'actions différentes sont-elles possibles pour l'état $E_1$ ?}
+
+On a $k = 3$ piles non-vides à l'état $E_1$. Pour chaque pile, il y a $k - 1$ actions possibles : déplacer le bloc du sommet de la pile vers le sommet d'une \textit{autre} pile. On a donc $(k - 1) \times 3 = 6$ actions possibles pour l'état $E_1$.
+
+\subsection{Question 2}
+\textit{Étant donné un état $E$ de $n$ blocs sur $k$ piles, quelle est la taille maximale de $actions(E)$ ?}
+
+On doit considérer le cas dans lequel il y a le plus d'actions possibles. Comme il n'y a pas d'action depuis une pile vide, on déduit que le nombre maximal d'action possible a lieu quand toutes les piles sont non-vides. On a donc $k$ piles non-vides, et pour chaque pile, on a $k - 1$ actions possibles. On a donc $k \times (k - 1)$ actions possibles.
+
+\subsection{Question 3}
+
+\textit{Étant donné un état $E$ de $n$ blocs sur $k$ piles ayant $v$ piles vides, quelle est la taille de $actions(E)$ ?}
+
+reponse a developper: (k-v)(k-1)
+
+\subsection{Question 4}
+
+\textit{Quel est l'ordre de grandeur du nombre total d'états différents possibles ?}
+
+reponse a développer: exponentiel
+
+\section{Partie 2 : Définition du graphe d'états}
+
+\subsection{Question 5}
+
+\textit{Le graphe d'états $G$ est-il orienté ?}
+
+Oui, orienté
+
+\subsection{Question 6}
+
+\textit{Quels sont les algorithmes qui peuvent être utilisés pour rechercher ce plus court chemin ?}
+
+Bellman-Ford, BFS, Dijkstra
+
+\subsection{Question 7}
+
+\textit{Quel est l'algorithme le plus efﬁcace pour rechercher ce plus court chemin ?}
+
+BFS car le graph est non pondéré, donc pas besoin d'algorithmes plus complexes
+
+\subsection{Question 8}
+
+\textit{Quelle est la complexité en temps de cet algorithme par rapport à |S| et |A| ?}
+
+linéaire
+
+\subsection{Question 9}
+
+\textit{Quelle est la complexité en temps de cet algorithme par rapport au nombre de blocs (n) et de piles (k) ?}
+
+exponentielle
+
+\section{Partie 3 : Heuristiques pour le monde des blocs}
+
+\subsection{Question 10}
+
+On commence par exécuter le programme de recherche de plus court chemin pour 4 piles, et un nombre de blocs variant de 6 à 8. On obtient les résultats suivants :
+
+\begin{minipage}{\dimexpr\linewidth-20pt}
+    \begin{lstlisting}[language=bash, caption={Résultat de l'algorithme PageRank après convergence sur le graphe $G_2$, avec $\alpha = 0.9$ et $\epsilon = 1.0 \times 10^{-10}$.}]
+        $ make run
+        Enter the number of stacks: 4
+        Enter the number of blocs: 6
+        Optimal solution of length 7 found in 12982 iterations and 0.060902 seconds
+        [...]
+        $ make run
+        Enter the number of stacks: 4
+        Enter the number of blocs: 7
+        Optimal solution of length 9 found in 188569 iterations and 1.04769 seconds
+        [...]
+        $ make run
+        Enter the number of stacks: 4
+        Enter the number of blocs: 8
+        Optimal solution of length 11 found in 2224481 iterations and 15.6446 seconds
+        [...]
+    \end{lstlisting}
+\end{minipage}
+
+On peut observer que le nombre d'itérations et le temps d'exécution augmentent de manière exponentielle avec le nombre de blocs. Pour améliorer les performances de l'algorithme, on peut utiliser une heuristique pour guider la recherche.
+
+On introduit les heuristiques suivantes :
+— h1 : Nombre de blocs ne se trouvant pas sur la dernière pile.
+— h2 : Nombre de blocs ne se trouvant pas sur la dernière pile, plus deux fois le nombre de blocs b tels que b se
+trouve sur la dernière pile mais il devra nécessairement être enlevé de cette pile pour ajouter et/ou supprimer
+d'autres blocs sous lui.
+— h3 : Nombre de blocs de Ei ne se trouvant pas sur la dernière pile, plus le nombre de blocs se trouvant au
+dessus de chaque bloc ne se trouvant pas sur la dernière pile.
+
+On dit qu'une heuristique est admissible si...
+Let δ (u, t) be the distance between u and t, i.e. The length of a shortest path. h is admissible if foreach node u, h(u) ≤ δ (u, t).
+
+une heuristique h est plus informée qu'une heuristique h' si pour tout état E, h(E) ≥ h'(E), tandis que les deux heuristiques sont
+incomparables s'il existe deux états E et E' tels que h(E) < h'(E) et h(E') > h'(E')
+
+\subsection{Question 11}
+
+\textit{L'heuristique h1 est-elle admissible ?}
+
+h1 < δ, donc oui
+
+\subsection{Question 12}
+
+h2 < δ, donc oui
+
+\textit{L'heuristique h2 est-elle admissible ?}
+
+\subsection{Question 13}
+
+\textit{L'heuristique h2 est elle plus informée, moins informée, ou incomparable par rapport à l'heuristique h1 ?}
+
+h1 < h2 < δ, donc h2 plus informée que h1
+
+\subsection{Question 14}
+
+\textit{L'heuristique h3 est-elle admissible ?}
+
+h3 < δ, donc oui
+
+\subsection{Question 15}
+
+\textit{L'heuristique h3 est elle plus informée, moins informée, ou incomparable par rapport à l'heuristique h2 ?}
+
+h3 < h2 < δ donc h3 moins informée que h2
+
+
