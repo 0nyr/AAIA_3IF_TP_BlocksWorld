@@ -6,6 +6,7 @@
 class StateGraph {
 public:
     StateGraph();
+    StateGraph(int nbStacks, int nbBlocs);
     State initialState() const;
     bool isFinal(const State &s) const;
     int searchActions(const State &s);

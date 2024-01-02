@@ -1,8 +1,10 @@
 #include "state_graph.hpp"
 #include <iostream>
 
+/** 
+ * @brief Constructs a bloc world planning problem.
+ */
 StateGraph::StateGraph() {
-    // Constructor that creates a bloc world planning problem
     std::cout << "Enter the number of stacks: ";
     std::cin >> nbStacks;
     std::cout << "Enter the number of blocs: ";
@@ -13,13 +15,27 @@ StateGraph::StateGraph() {
     }
 }
 
+/**
+ * @brief Construcs a bloc world planning problem with nbStacks stacks and nbBlocs blocs
+ * @param nbStacks The number of stacks
+ * @param nbBlocs The number of blocs
+ */
+StateGraph::StateGraph(int nbStacks, int nbBlocs) : nbStacks(nbStacks), nbBlocs(nbBlocs) {}
+
+/**
+ * @brief Get the initial state
+ * @return The initial state
+ */
 State StateGraph::initialState() const {
-    // Return the initial state
     return State(nbStacks, nbBlocs);
 }
 
+/**
+ * @brief Check if a state is final
+ * @param s The state to check
+ * @return True if s is a final state, false otherwise
+ */
 bool StateGraph::isFinal(const State &s) const {
-    // Return true if s is a final state
     for (int i=0; i<nbStacks-1; i++)
         if (s.getNbBlocs(i)>0) return false;
     for (int i=0; i<nbBlocs; i++)
@@ -28,10 +44,12 @@ bool StateGraph::isFinal(const State &s) const {
 
 }
 
+/** 
+ * @brief Search all possible actions from state s
+ * @param s The state from which the search is performed
+ * @return The number of possible actions
+ */
 int StateGraph::searchActions(const State &s) {
-    // Return the number of all possible actions from state s
-    // initialize actions with all possible actions from state s
-    // An action is an integer value a such that a/nbStacks is the stack from which a bloc is removed and a%nbStacks is the stack on which the bloc is added
     actions.clear();
     for (int i=0; i<nbStacks; i++) {
         if (s.getNbBlocs(i)>0) {
@@ -43,24 +61,45 @@ int StateGraph::searchActions(const State &s) {
     return actions.size();
 }
 
+/** 
+ * @brief Compute the heuristic value of state s
+ * @param s The state for which the heuristic value is computed
+ * @return The heuristic value of state s
+ */
 int StateGraph::heuristic(const State &s) const {
-    // return a lower bound of the length of the shortest path from s to a final state
     int c = 0;
     // Insert your code here to implement a more informed heuristic!
     return c;
 }
 
+/** 
+ * @brief Apply the i-th action to state s
+ * @param s The state to which the action is applied
+ * @param i The index of the action to apply
+ * @return The successor state
+ * @precondition 0<=i<searchActions(s)
+ */
 State StateGraph::transition(const State &s, int i) {
-    // Return the state obtained when performing ith action on state s
+    
     return State(s, actions[i]/nbStacks, actions[i]%nbStacks);
 }
 
+/** 
+ * @brief Get the cost of the i-th action from state s
+ * @param s The state from which the action is applied
+ * @param i The index of the action
+ * @return The cost of the action
+ * @precondition 0<=i<searchActions(s)
+ */
 int StateGraph::getCost(const State &s, int i) const {
-    // Precondition: 0<=i<searchActions(s)
-    // Return the cost of performing ith action on state s
     return 1;
 }
 
+/** 
+ * @brief Print the transition from state s to state s_succ
+ * @param s The state from which the transition is performed
+ * @param s_succ The successor state
+ */
 void StateGraph::print(const State &s, const State &s_succ) {
     static State s0 = initialState();
     if (s == s0) {
