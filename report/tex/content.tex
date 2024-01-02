@@ -36,11 +36,15 @@ Pour maximiser le nombre d'actions possibles, chaque pile doit contenir au moins
 
 Avec $v$ piles vides, il reste $k - v$ piles contenant des blocs. Chaque pile active peut envoyer un bloc à $k - 1$ autres piles, donc le nombre total d'actions est $(k-v)(k-1)$.
 
-\subsection{Question 4}
+\subsection{Question 4}\label{q:4}
 
 \textit{Quel est l'ordre de grandeur du nombre total d'états différents possibles ?}
 
-Le nombre total d'états est exponentiel par rapport au nombre de blocs et de piles, car chaque bloc peut être sur l'une des $k$ piles, ce qui donne une croissance exponentielle de la complexité avec l'augmentation de $n$ et $k$.
+Le nombre total d'états est exponentiel par rapport au nombre de blocs et linéaire par rapport au nombre de piles. 
+
+Pour s'en convaincre, on peut considérer que pour atteindre l'état final, chaque bloc doit être déplacé au moins une fois. Considérons cette situation qui est donc une borne minimale du chemin optimal parmi le graphe d'états possibles. Dans ce cas, à chaque niveau de profondeur, on a vu avec la question 2 qu'il y a $k(k - 1)$ actions possibles au maximum. Ainsi, chaque état à chaque niveau possède $k(k - 1)$ états fils. On peut donc en déduire que le nombre total d'états est de l'ordre de $O(k(k - 1)^n) = O((k^2 - k)^n) = O(k^2n)$.
+
+On se retrouve alors avec une borne minimale du nombre maximum d'états possible en $O(k^2n)$, ce qui est exponentiel par rapport au nombre de blocs et linéaire par rapport au nombre de piles.
 
 \section{Partie 2 : Définition du graphe d'états}
 
@@ -54,13 +58,17 @@ Oui, le graphe d'états $G$ est orienté. Chaque action menant d'un état $E$ à
 
 \textit{Quels sont les algorithmes qui peuvent être utilisés pour rechercher ce plus court chemin ?}
 
-Plusieurs algorithmes peuvent être utilisés pour rechercher le plus court chemin, tels que Bellman-Ford, BFS et Dijkstra, en fonction des spécificités du graphe (poids, orientation, etc.).
+Plusieurs algorithmes peuvent être utilisés pour rechercher le plus court chemin, tels que Bellman-Ford, BFS, DFS et Dijkstra, en fonction des spécificités du graphe (poids, orientation, etc.).
 
 \subsection{Question 7}
 
 \textit{Quel est l'algorithme le plus efficace pour rechercher ce plus court chemin ?}
 
-Dans le contexte d'un graphe non pondéré comme celui du Monde des Blocs, BFS (Breadth-First Search) est généralement le plus efficace car il trouve le plus court chemin en explorant uniformément autour du nœud source.
+Dans le contexte d'un graphe non pondéré comme celui du Monde des Blocs, BFS (Breadth-First Search) est généralement le plus efficace, car il trouve le plus court chemin en explorant uniformément autour du nœud source.
+
+DFS est un autre algorithme de parcours de graphe qui se concentre sur l'exploration en profondeur d'une branche du graphe avant de revenir en arrière pour explorer d'autres branches. Il peut également être utilisé pour trouver le plus court chemin. 
+
+Chacun de ces algorithmes a ses avantages et inconvénients. Mais surtout, ils peuvent être améliorés en utilisant des heuristiques pour guider la recherche vers des solutions plus optimales.
 
 \subsection{Question 8}
 
@@ -72,7 +80,7 @@ La complexité temporelle de BFS est linéaire, soit O(|S| + |A|), où |S| est l
 
 \textit{Quelle est la complexité en temps de cet algorithme par rapport au nombre de blocs (n) et de piles (k) ?}
 
-La complexité temporelle de l'algorithme par rapport au nombre de blocs (n) et de piles (k) est exponentielle, car le nombre total d'états possibles croît exponentiellement avec l'augmentation de n et k.
+La complexité temporelle de l'algorithme par rapport au nombre de blocs (n) et de piles (k) est exponentielle, car le nombre total d'états possibles croît exponentiellement avec l'augmentation de n et k (voir question 4, section \ref{q:4}).
 
 \section{Partie 3 : Heuristiques pour le monde des blocs}
 
@@ -116,19 +124,19 @@ Une heuristique $h$ est dite plus informée qu'une heuristique $h'$ si, pour tou
 
 \textit{L'heuristique $h_1$ est-elle admissible ?}
 
-L'heuristique $h_1$ est admissible car le nombre de blocs ne se trouvant pas sur la dernière pile représente une limite inférieure du nombre de mouvements nécessaires pour atteindre l'état final. En effet, chaque bloc doit au moins une fois être déplacé vers la dernière pile, sous-estimant ainsi le coût réel pour atteindre l'objectif.
+L'heuristique $h_1$ est admissible, car le nombre de blocs ne se trouvant pas sur la dernière pile représente une limite inférieure du nombre de mouvements nécessaires pour atteindre l'état final. En effet, chaque bloc doit au moins une fois être déplacé vers la dernière pile, sous-estimant ainsi le coût réel pour atteindre l'objectif.
 
 \subsection{Question 12}
 
 \textit{L'heuristique $h_2$ est-elle admissible ?}
 
-L'heuristique $h_2$ est également admissible. Elle prend en compte le coût de déplacement des blocs qui sont sur la dernière pile mais doivent être déplacés pour permettre à d'autres blocs de se placer en dessous. En multipliant ce nombre par deux, on reste dans une estimation inférieure du coût réel car chaque bloc déplacé peut nécessiter plus d'un mouvement pour atteindre sa position finale.
+L'heuristique $h_2$ est également admissible. Elle prend en compte le coût de déplacement des blocs qui sont sur la dernière pile, mais doivent être déplacés pour permettre à d'autres blocs de se placer en dessous. En multipliant ce nombre par deux, on reste dans une estimation inférieure du coût réel. En effet, pour chaque bloc sur la dernière pile, mais n'étant pas à la bonne hauteur, il faudra au minimum 2 déplacements de ce bloc considéré pour l'enlever puis le remettre sur la dernière pile. Il s'agit d'une estimation minimum, car chaque bloc ainsi déplacé peut nécessiter plus de 2 mouvements pour atteindre sa position finale.
 
 \subsection{Question 13}
 
 \textit{L'heuristique $h_2$ est-elle plus informée, moins informée, ou incomparable par rapport à l'heuristique $h_1$ ?}
 
-L'heuristique $h_2$ est plus informée que l'heuristique $h_1$. En plus de compter les blocs ne se trouvant pas sur la dernière pile, elle prend en compte le coût supplémentaire pour déplacer les blocs déjà sur la dernière pile, mais qui doivent être temporairement déplacés. Ainsi, $h_2$ fournit une meilleure estimation du coût réel et est donc plus informée.
+L'heuristique $h_2$ est plus informée que l'heuristique $h_1$. En plus de compter les blocs ne se trouvant pas sur la dernière pile, elle prend en compte le coût supplémentaire pour déplacer les blocs déjà sur la dernière pile, mais qui doivent être temporairement déplacés. Ainsi, $h_2$ donnera une valeur de coût égale ou supérieur à celle fournie par $h_1$, et donne donc une meilleure estimation du coût réel. Elle est donc plus informée.
 
 \subsection{Question 14}
 
@@ -140,5 +148,77 @@ L'heuristique $h_3$ est admissible. Elle compte non seulement les blocs qui ne s
 
 \textit{L'heuristique $h_3$ est-elle plus informée, moins informée, ou incomparable par rapport à l'heuristique $h_2$ ?}
 
-L'heuristique $h_3$ est généralement moins informée que $h_2$. Tandis que $h_2$ compte de manière spécifique les déplacements nécessaires pour les blocs sur la dernière pile, $h_3$ se concentre sur une vue plus globale de tous les blocs qui ne sont pas à leur place. Cela peut conduire à des situations où $h_3$ sous-estime davantage le coût comparé à $h_2$, rendant $h_3$ moins informée dans de nombreux cas.
+Tandis que $h_2$ compte de manière spécifique les déplacements nécessaires pour les blocs sur la dernière pile, $h_3$ se concentre sur une vue plus globale de tous les blocs qui ne sont pas à leur place. En fonction de la situation, par exemple si la dernière pile est déjà bien remplie, $h_2$ peut donner une meilleure estimation du coût réel que $h_3$ puisqu'il reste peu de blocs sur les autres piles. C'est bien sûr l'inverse quand la dernière pile est vide. Ainsi, les deux heuristiques sont incomparables.
 
+On peut ainsi trouver des contres-exemples :
+
+\[
+    \exists E_1, E_2 \in E \ | \ h_2(E_1) < h_2(E_2) \land h_3(E_1) > h_3(E_2).
+\]
+
+\begin{figure}
+    \centering
+
+    \begin{tabular}{ccc} 
+        \scalebox{0.6}{
+        \begin{tikzpicture}
+            \tikzstyle{every node}=[font=\LARGE]
+            \draw (4,24.75) rectangle node {\LARGE a} (5.75,23);
+            \draw (4,22.75) rectangle node {\LARGE d} (5.75,21);
+            \draw (7,22.75) rectangle node {\LARGE c} (8.75,21);
+            \draw (10,22.75) rectangle node {\LARGE e} (11.75,21);
+            \draw (10,24.75) rectangle node {\LARGE b} (11.75,23);
+            \draw [](4,20.75) to (5.75,20.75);
+            \draw [](7,20.75) to (8.75,20.75);
+            \draw [](10,20.75) to (11.75,20.75);
+            \node [font=\LARGE] at (5,20) {0};
+            \node [font=\LARGE] at (8,20) {1};
+            \node [font=\LARGE] at (11,20) {2};
+            \node [font=\LARGE] at (8,19) {$E_1$};
+        \end{tikzpicture}
+        }
+        
+        & \hspace{2cm} &
+
+        \scalebox{0.6}{
+        \begin{tikzpicture}
+            \tikzstyle{every node}=[font=\LARGE]
+            \draw (4,24.75) rectangle node {\LARGE a} (5.75,23);
+            \draw (4,22.75) rectangle node {\LARGE d} (5.75,21);
+            \draw (7,22.75) rectangle node {\LARGE c} (8.75,21);
+            \draw (10,22.75) rectangle node {\LARGE e} (11.75,21);
+            \draw (7,24.75) rectangle node {\LARGE b} (8.75,23);
+            \draw [](4,20.75) to (5.75,20.75);
+            \draw [](7,20.75) to (8.75,20.75);
+            \draw [](10,20.75) to (11.75,20.75);
+            \node [font=\LARGE] at (5,20) {0};
+            \node [font=\LARGE] at (8,20) {1};
+            \node [font=\LARGE] at (11,20) {2};
+            \node [font=\LARGE] at (8,19) {$E_2$};
+        \end{tikzpicture}
+        }
+    \end{tabular}
+    
+    \caption{Exemples de deux états $E_1$ et $E_2$, pour $k = 3$ et $n = 5$.}.
+    \label{fig:contre_exemple_h2_h3}
+\end{figure}
+
+Dans l'illustration suivante \ref{fig:contre_exemple_h2_h3}, on peut voir :
+
+\[
+    h(E_1) = 
+    \begin{cases} 
+        h_1(E_1) = 3 \\
+        h_2(E_1) = 5 \\
+        h_3(E_1) = 4
+    \end{cases}
+    \quad
+    h(E_2) =
+    \begin{cases} 
+        h_1(E_2) = 4 \\
+        h_2(E_2) = 4 \\
+        h_3(E_2) = 6
+    \end{cases}
+\]
+
+On a donc $h_2(E_1) > h_3(E_2) \land h_2(E_1) < h_3(E_2)$, ce qui montre que les deux heuristiques sont incomparables.
