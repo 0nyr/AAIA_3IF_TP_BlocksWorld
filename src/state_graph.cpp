@@ -13,6 +13,25 @@ StateGraph::StateGraph() {
         std::cout << "The number of stacks and the number of blocs must be positive numbers\n";
         exit(0);
     }
+
+    // Which heuristic to use?
+    std::cout << "+----- Which heuristic do you want to use?\n";
+    std::cout << "+- 0. Default heuristic (always 0, useless) \n";
+    std::cout << "+- 1. Number of blocks not in the last stack\n";
+
+    int heuristicChoice;
+    std::cin >> heuristicChoice;
+    switch (heuristicChoice) {
+        case 0:
+            h = defaultHeuristic;
+            break;
+        case 1:
+            h = heuristic1;
+            break;
+        default:
+            std::cout << "Invalid heuristic choice\n";
+            exit(0);
+    }
 }
 
 /**
@@ -20,7 +39,14 @@ StateGraph::StateGraph() {
  * @param nbStacks The number of stacks
  * @param nbBlocs The number of blocs
  */
-StateGraph::StateGraph(int nbStacks, int nbBlocs) : nbStacks(nbStacks), nbBlocs(nbBlocs) {}
+StateGraph::StateGraph(
+    int nbStacks, int nbBlocs, Heuristic h
+) : nbStacks(nbStacks), nbBlocs(nbBlocs), h(h) {}
+
+/**
+ * @brief Destroys the bloc world planning problem
+ */
+StateGraph::~StateGraph() {}
 
 /**
  * @brief Get the initial state
@@ -41,7 +67,6 @@ bool StateGraph::isFinal(const State &s) const {
     for (int i=0; i<nbBlocs; i++)
         if (s.getBloc(nbStacks-1, i) != 'a'+nbBlocs-1-i) return false;
     return true;
-
 }
 
 /** 
@@ -67,9 +92,7 @@ int StateGraph::searchActions(const State &s) {
  * @return The heuristic value of state s
  */
 int StateGraph::heuristic(const State &s) const {
-    int c = 0;
-    // Insert your code here to implement a more informed heuristic!
-    return c;
+    return this->h(s);
 }
 
 /** 

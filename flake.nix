@@ -30,6 +30,7 @@
             # C/C++
             pkgs.gcc
             pkgs.gnumake
+            pkgs.gdb
           ];
 
           # environment variables.
