@@ -36,6 +36,10 @@ private:
     int selectedHeuristic; // Heuristic function
 
     // private methods
+    // WARN: when adding a new heuristic, don't forget to add it to the switch in heuristic()
     int defaultHeuristic(const State &s) const;
     int heuristic1(const State &s) const;
+    int heuristic2(const State &s) const;
+    int heuristic3(const State &s) const;
+    int heuristic4(const State &s) const;
 };

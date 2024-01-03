@@ -21,8 +21,8 @@ StateGraph::StateGraph() {
 
     int heuristicChoice;
     std::cin >> heuristicChoice;
-    if (heuristicChoice < 0 || heuristicChoice > 1) {
-        std::cout << "The heuristic choice must be 0 or 1\n";
+    if (heuristicChoice < 0 || heuristicChoice > 4) {
+        std::cout << "The heuristic choice must be in {0, 1, 2, 3, 4}\n";
         exit(0);
     }
     this->selectedHeuristic = heuristicChoice;
@@ -89,6 +89,15 @@ int StateGraph::heuristic(const State &s) const {
     switch (this->selectedHeuristic) {
         case 1:
             return heuristic1(s);
+            break;
+        case 2:
+            return heuristic2(s);
+            break;
+        case 3:
+            return heuristic3(s);
+            break;
+        case 4:
+            return heuristic4(s);
             break;
         default:
             return defaultHeuristic(s);
@@ -167,5 +176,114 @@ int StateGraph::heuristic1(const State &s) const {
     return nbBlocs - nbBlocsLastStack;
 }
 
+/**
+ * @brief Heuristic about the number of blocks not on the last 
+ * stack, plus twice the number of blocks b such that b is on 
+ * the last stack but will have to be removed from this stack 
+ * to add and/or remove other blocks under it.
+ */
+int StateGraph::heuristic2(const State &s) const {
+    int nbBlocsLastStack = s.getNbBlocs(nbStacks-1);
+    int nbBlocsNotLastStack = nbBlocs - nbBlocsLastStack;
 
+    int nbBlocsLastStackToMove = 0;
+    for (int i=0; i<nbBlocsLastStack; i++) {
+        if (s.getBloc(nbStacks-1, i) != 'a'+nbBlocs-1-i) {
+            // The block is not in the right place
+            // this block, and any after it, will have to be moved
+            nbBlocsLastStackToMove = nbBlocsLastStack - i;
+            break;
+        }
+    }
+    return nbBlocsNotLastStack + 2*nbBlocsLastStackToMove;
+}
+
+/**
+ * @brief Number of blocks of Ei not on the last stack, 
+ * plus the number of blocks above each block not on the 
+ * last stack.
+ */
+int StateGraph::heuristic3(const State &s) const {
+    int nbBlocsLastStack = s.getNbBlocs(nbStacks-1);
+    int nbBlocsNotLastStack = nbBlocs - nbBlocsLastStack;
+
+    int nbBlocsAbove = 0;
+    for (int i=0; i<nbStacks-1; i++) {
+        int nbBlocsStack = s.getNbBlocs(i);
+        if (nbBlocsStack <= 1) continue;
+        // each block above first one counts
+        // then -1 for the next one, -2 for the next one, etc.
+        // we use the formula for the sum of the first n integers
+        // 1 + 2 + ... + n = n*(n+1)/2
+        // NOTE: here, n = nbBlocsStack-1
+        nbBlocsAbove += (nbBlocsStack*(nbBlocsStack-1))/2;
+    }
+
+    return nbBlocsNotLastStack + nbBlocsAbove;
+}
+
+/**
+ * @brief Composite heuristic combining the features of heuristic1 and heuristic2 with an additional twist.
+ * 
+ * This heuristic aims to more accurately estimate the minimum number of moves required 
+ * to reach the goal by not only considering the number of blocks not on the last stack (from heuristic1) 
+ * and the blocks on the last stack that need to be moved (from heuristic2), but also by considering 
+ * the arrangement of blocks on all other stacks.
+ *
+ * Specifically, it adds to the sum:
+ * - The number of blocks not in the last stack (heuristic1).
+ * - Twice the number of blocks on the last stack that need to be moved to reach the goal state (heuristic2).
+ * - For each stack (except the last one), it increments the heuristic sum for every block 
+ *   that is not a bigger letter than the one below it. This captures the fact that blocks
+ *   that states where blocks not on the last stack are in increasing order will be easier to 
+ *   reach the goal state from than states where they are not in increasing order.
+ * 
+ * For example, consider the following states:
+ * 
+ *  State 1:       State 2:
+ *  3  1           4  2  
+ *  4  2  0        3  1  0
+ *  #  #  #        #  #  #
+ *
+ * One can do by hand that State 2 is 7 moves away from the goal state, while State 1 is needs much more.
+ * 
+ * By combining these elements, heuristic4 provides an improved estimate over heuristic1 and heuristic2 
+ * individually by capturing more nuances of the block arrangement. This underestimation is important as it 
+ * ensures the heuristic remains admissible, never overestimating the true cost to reach the goal, which 
+ * is a critical property for A* and related algorithms to guarantee they find the shortest path.
+ *
+ * @param s The current state to evaluate.
+ * @return An integer representing the heuristic cost estimate to reach the goal state from the given state.
+ */
+int StateGraph::heuristic4(const State &s) const {
+    // heuristic 1
+    int nbBlocsLastStack = s.getNbBlocs(nbStacks-1);
+    int hSum = nbBlocs - nbBlocsLastStack;
+
+    // heuristic 2
+    int nbBlocsLastStackToMove = 0;
+    for (int i=0; i<nbBlocsLastStack; i++) {
+        if (s.getBloc(nbStacks-1, i) != 'a'+nbBlocs-1-i) {
+            // The block is not in the right place
+            // this block, and any after it, will have to be moved
+            nbBlocsLastStackToMove = nbBlocsLastStack - i;
+            break;
+        }
+    }
+    hSum = hSum + 2*nbBlocsLastStackToMove;
+
+    // heuristic 4
+    for(int i = 0; i<nbStacks-1; i++){
+        int maxStackLetter = 0;
+        for(int j = 0; j<s.getNbBlocs(i); j++){
+            if(maxStackLetter < s.getBloc(i, j)){
+                maxStackLetter = s.getBloc(i, j);
+            } else {
+                hSum++;
+            }
+        }
+    }
+
+    return hSum;
+}
 
