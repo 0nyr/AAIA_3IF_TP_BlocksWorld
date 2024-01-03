@@ -53,7 +53,7 @@ void AStar::astar(const State &s0, StateGraph &g) {
     int nbIter = 0;
     HashMap map;
     PriorityQueue q;
-    map[s0].g = 0;
+    map[s0].cost = 0;
     map[s0].isGrey = true;
     q.push({s0, g.heuristic(s0)});
     while (!q.empty()) {
@@ -62,7 +62,7 @@ void AStar::astar(const State &s0, StateGraph &g) {
         if (!map[s].isGrey) continue;
         nbIter++;
         if (g.isFinal(s)) {
-            std::cout << "Optimal solution of length " << map.at(s).g << " found in " << nbIter << " iterations and "
+            std::cout << "Optimal solution of length " << map.at(s).cost << " found in " << nbIter << " iterations and "
                       << static_cast<double>(clock() - start) / CLOCKS_PER_SEC << " seconds\n";
             //printSolution(g, s0, s, map);
             return;
@@ -70,15 +70,110 @@ void AStar::astar(const State &s0, StateGraph &g) {
         int nbActions = g.searchActions(s);
         for (int i = 0; i < nbActions; i++) {
             State ss = g.transition(s, i);
-            if (map.count(ss) == 0 || map[s].g + g.getCost(s, i) < map[ss].g) {
+            if (map.count(ss) == 0 || map[s].cost + g.getCost(s, i) < map[ss].cost) {
                 map[ss].isGrey = true;
-                map[ss].g = map[s].g + g.getCost(s, i);
+                map[ss].cost = map[s].cost + g.getCost(s, i);
                 map[ss].pred = s;
-                q.push({ss, map[ss].g + g.heuristic(ss)});
+                q.push({ss, map[ss].cost + g.heuristic(ss)});
             }
         }
         map[s].isGrey = false;
     }
     std::cout << "The problem has no solution (number of iterations = " << nbIter << "; CPU time = "
               << static_cast<double>(clock() - start) / CLOCKS_PER_SEC << "s)\n";
+}
+
+/**
+ * @brief Implements the AWA* search algorithm.
+ * 
+ * AWA* is a variant of A* that uses a weighted heuristic to find a solution
+ * faster than A* at the cost of optimality. The weight is a parameter that
+ * can be tuned to find a balance between optimality and speed. It basically 
+ * increases the importance of the heuristic in the cost function.
+ * 
+ * The weight needs to be greater or equal to 1 for the algorithm to be admissible.
+ * When the weight is equal to 1, AWA* is equivalent to A*.
+ * 
+ * @param s0 The initial state from where the search begins.
+ * @param g The state graph containing all possible states and transitions.
+ * @param weight The weight of the heuristic. Must be greater or equal to 1.
+ */
+void AStar::awa_star(
+    const State &s0, StateGraph &g, int weight
+) {
+    clock_t start = clock();
+
+    int nbIter = 0;
+    // Initialize upper bound to "infinity", i.e. the max int value
+    // WARN: Do NOT use std::numeric_limits<int>::infinity() here
+    // because it gives 0 since infinity is not a concept in integers
+    int upperBound = std::numeric_limits<int>::max();
+    HashMap map;
+    PriorityQueue q;
+
+    // initializations
+    map[s0].cost = 0;
+    map[s0].isGrey = true;
+    q.push({s0, g.heuristic(s0)});
+
+    std::cout << "starting upper bound = " << upperBound << "\n";
+
+    while (!q.empty()) {
+        State s = q.top().first;
+        q.pop();
+        if (!map[s].isGrey) {
+            continue; // ignore already visited states
+        }
+        nbIter++;
+
+        // in AWA*, removed check if the state is final here
+
+        int nbActions = g.searchActions(s);
+        for (int i = 0; i < nbActions; i++) {
+            State ss = g.transition(s, i);
+            if (
+                (map.count(ss) == 0) || 
+                (map[s].cost + g.getCost(s, i) < map[ss].cost)
+            ) {
+                map[ss].isGrey = true;
+                map[ss].cost = map[s].cost + g.getCost(s, i);
+                map[ss].pred = s;
+
+                // AWA* specific
+                if (g.isFinal(ss)) {
+                    upperBound = map.at(ss).cost;
+                    std::cout << "Found solution of length " 
+                        << map.at(ss).cost << " in " << nbIter 
+                        << " iterations and "
+                        << static_cast<double>(clock() - start) / CLOCKS_PER_SEC << " seconds, upper bound = " 
+                        << upperBound << ", weight = "
+                        << weight << "\n";
+                } else if (
+                    (map.at(ss).cost + g.heuristic(ss)) < upperBound
+                ) {
+                    q.push(
+                        {
+                            ss, 
+                            map[ss].cost + (weight * g.heuristic(ss))
+                        }
+                    );
+                } 
+            }
+        }
+        map[s].isGrey = false; // set state to visited (black)
+    }
+
+    if (upperBound == std::numeric_limits<int>::infinity()) {
+        std::cout << "No solution could be found with current input"
+            << " parameters (weight = " << weight
+            << ", nb of iterations = " << nbIter 
+            << ", enlapsed time = " 
+            << ((double) (clock() - start)) / CLOCKS_PER_SEC 
+            << "s)\n";
+    } else {
+        std::cout << "Optimal solution of length " << upperBound 
+            << " found in " << nbIter << " iterations and "
+            << static_cast<double>(clock() - start) / CLOCKS_PER_SEC 
+            << " seconds, weight = " << weight << "\n";
+    }
 }
