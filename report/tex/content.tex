@@ -222,3 +222,153 @@ Dans l'illustration suivante \ref{fig:contre_exemple_h2_h3}, on peut voir :
 \]
 
 On a donc $h_2(E_1) > h_3(E_2) \land h_2(E_1) < h_3(E_2)$, ce qui montre que les deux heuristiques sont incomparables.
+
+\subsection{Question 16 : heuristique $h_4$}
+
+\textit{Quelle est la longueur (en nombre d'actions) de la solution optimale pour $n = 16$ blocs et $k = 4 piles$ ?}
+
+On commence par implémenter les trois heuristiques dans le programme de recherche de plus court chemin. On obtient nos premiers résultats :
+
+\begin{minipage}{\dimexpr\linewidth-20pt}
+    \begin{lstlisting}[language=bash, caption={Résultats de l'exécution du programme de recherche de plus court chemin avec 3 premières heuristiques pour $k = 4$ piles et $n = 8$ blocs.}, label={lst:plus_court_chemin_results_h1-3_first_res}]
+        $ make run
+        [...]
+        g(4, 8, heuristic0): 
+        Optimal solution of length 11 found in 2224481 iterations and 15.1703 seconds
+        g(4, 8, heuristic1): 
+        Optimal solution of length 11 found in 61468 iterations and 0.242329 seconds
+        g(4, 8, heuristic2): 
+        Optimal solution of length 11 found in 169 iterations and 0.000934 seconds
+        g(4, 8, heuristic3): 
+        Optimal solution of length 12 found in 261465 iterations and 1.12496 seconds
+    \end{lstlisting}
+\end{minipage}
+
+On remarque d'après les résultats obtenus \ref{lst:plus_court_chemin_results_h1-3_first_res} que l'heuristique $h_2$ est la plus performante, car elle trouve la solution optimale en un nombre d'itérations et de temps d'exécution très faible. On peut donc la considérer comme la meilleure heuristique parmi les trois.
+
+On ajoute alors une quatrième heuristique $h_4$ basée sur $h_2$, elle-même une amélioration de $h_1$. Pour cela, considérons par exemples les états $E_1$ et $E_2$ suivants :
+
+\begin{figure}[!ht]
+    \centering
+
+    \begin{tabular}{ccc} 
+        \scalebox{0.6}{
+        \begin{tikzpicture}
+            \tikzstyle{every node}=[font=\LARGE]
+            \draw (4,24.75) rectangle node {\LARGE 3} (5.75,23);
+            \draw (4,22.75) rectangle node {\LARGE 4} (5.75,21);
+            \draw (7,22.75) rectangle node {\LARGE 2} (8.75,21);
+            \draw (10,22.75) rectangle node {\LARGE 0} (11.75,21);
+            \draw (7,24.75) rectangle node {\LARGE 1} (8.75,23);
+            \draw [](4,20.75) to (5.75,20.75);
+            \draw [](7,20.75) to (8.75,20.75);
+            \draw [](10,20.75) to (11.75,20.75);
+            \node [font=\LARGE] at (5,20) {0};
+            \node [font=\LARGE] at (8,20) {1};
+            \node [font=\LARGE] at (11,20) {2};
+            \node [font=\LARGE] at (8,19) {$E_1$};
+        \end{tikzpicture}
+        }
+        
+        & \hspace{2cm} &
+
+        \scalebox{0.6}{
+        \begin{tikzpicture}
+            \tikzstyle{every node}=[font=\LARGE]
+            \draw (4,24.75) rectangle node {\LARGE 4} (5.75,23);
+            \draw (4,22.75) rectangle node {\LARGE 3} (5.75,21);
+            \draw (7,22.75) rectangle node {\LARGE 1} (8.75,21);
+            \draw (10,22.75) rectangle node {\LARGE 0} (11.75,21);
+            \draw (7,24.75) rectangle node {\LARGE 3} (8.75,23);
+            \draw [](4,20.75) to (5.75,20.75);
+            \draw [](7,20.75) to (8.75,20.75);
+            \draw [](10,20.75) to (11.75,20.75);
+            \node [font=\LARGE] at (5,20) {0};
+            \node [font=\LARGE] at (8,20) {1};
+            \node [font=\LARGE] at (11,20) {2};
+            \node [font=\LARGE] at (8,19) {$E_2$};
+        \end{tikzpicture}
+        }
+    \end{tabular}
+    
+    \caption{Exemples de deux états $E_1$ et $E_2$, pour $k = 3$ et $n = 5$, illustrant l'intérêt derrière $h_4$.}
+    \label{fig:exemple_pour_h4}
+\end{figure}
+
+On peut constater à la main que l'état $E_2$ est à 7 mouvements de l'état cible, alors que l'état $E_1$ en a besoin de beaucoup plus.
+
+On définit alors une telle heuristique $h_4$ comme suit :
+
+\begin{itemize}
+    \item \textbf{Nombre de blocs non dans la dernière pile :} Correspondant à \(h_1\), cette partie compte tous les blocs qui ne sont pas placés dans la dernière pile. Plus il y a de blocs éloignés de leur destination finale, plus le nombre de mouvements requis sera potentiellement important.
+    
+    \item \textbf{Deux fois le nombre de blocs sur la dernière pile à déplacer :} Cette mesure reprends \(h_2\) en donnant plus de poids aux blocs qui doivent être déplacés depuis la dernière pile. Cela reflète le coût potentiellement élevé en termes de mouvements pour déplacer ces blocs, notamment s'il faut les déplacer temporairement ailleurs avant de les remettre en ordre.
+    
+    \item \textbf{Évaluation de l'arrangement des blocs sur toutes les autres piles :} Pour chaque pile (sauf la dernière), 
+    on augmente la somme heuristique pour chaque bloc qui n'est pas plus grand que le bloc situé en dessous. Ainsi, un bloc plus petit ou de taille égale reposant sur un bloc plus grand augmente la valeur heuristique, indiquant un état moins idéal. Cela capture l'arrangement des blocs dans les piles et favorise les états où ils sont déjà dans un ordre croissant vers le but.
+\end{itemize}
+
+En combinant ces éléments, l'heuristique $h_4$ fournit une meilleure sous-estimation que $h_1$ ou $h_2$, en saisissant davantage de nuances dans l'agencement des blocs. Cette sous-estimation est importante car elle garantit que l'heuristique reste admissible et ne surestime jamais le coût réel pour atteindre l'objectif, ce qui est une propriété essentielle pour guarantir l'optimalité de A*.
+
+On obtient les résultats suivants pour cette nouvelle heuristique :
+
+\begin{minipage}{\dimexpr\linewidth-20pt}
+    \begin{lstlisting}[language=bash, caption={Résultats de l'exécution du programme de recherche de plus court chemin avec l'heuristique $h_4$ pour $k = 4$ piles et $n = 8$ blocs.}, label={lst:plus_court_chemin_results_h4_first_res}]
+        $ make run
+        [...]
+        g(4, 8, heuristic4): 
+        Optimal solution of length 11 found in 50 iterations and 0.000341 seconds
+    \end{lstlisting}
+\end{minipage}
+
+Comme on peut s'y attendre, l'heuristique $h_4$ est plus performante que les trois premières heuristiques. Elle trouve la solution optimale en un nombre d'itérations et de temps d'exécution très faible. On peut donc la considérer comme la meilleure heuristique parmi les quatre. C'est cette heuristique qui sera utilisée pour la suite des expériences.
+
+\subsection{Question 17}
+
+\textit{Quelle est la longueur (en nombre d'actions) de la solution optimale pour $n = 20$ blocs et $k = 4$ piles ?}
+
+On exécute le programme de recherche de plus court chemin avec l'heuristique $h_4$ pour $n = 20$ blocs et $k = 4$ piles. On obtient les résultats suivants :
+
+\begin{minipage}{\dimexpr\linewidth-20pt}
+    \begin{lstlisting}[language=bash, caption={Résultats de l'exécution du programme de recherche de plus court chemin avec l'heuristique $h_4$ pour $k = 4$ piles et $n = 20$ blocs.}, label={lst:plus_court_chemin_results_h4_k4_n20}]
+        $ make run
+        [...]
+        g(4, 20, heuristic4): 
+        Optimal solution of length 32 found in 306805 iterations and 3.11438 seconds
+    \end{lstlisting}
+\end{minipage}
+
+La longueur de la solution optimale est de 32 actions.
+
+\subsection{Question 18}
+
+\textit{Quelle est la longueur (en nombre d'actions) de la solution optimale pour $n = 25$ blocs et $k = 5$ piles ?}
+
+Afin de trouver la longueur de la solution optimale pour autant de calculs nécessaires, on transforme le programme de recherche de plus court chemin en passant de \textit{A*} à \textit{AWA*} (Anytime Weighted A*). AWA* est une variante de A* qui permet de trouver une solution optimale en un temps limité. Il s'agit d'une version pondérée de A*, où le poids $w$ est défini par l'utilisateur. Ainsi, AWA* peut être utilisé pour trouver une solution optimale en un temps limité, ou pour trouver une solution sous-optimale en un temps limité.
+
+\begin{itemize}
+    \item \textbf{Algorithme WA* (Weighted A*) :} Version très légèrement modifiée de l'algorithme A*, où la valeur de mise en file d'attente dans le tas est davantage pondérée en faveur de l'heuristique. Ceci transforme techniquement A* en une sorte de Recherche Gloutonne au Meilleur Premier (Greedy Best First Search). Ainsi, lorsque \(w = 1\), la distance depuis l'origine et la distance heuristique vers le but sont pondérées de manière égale et l'algorithme se comporte exactement comme A*. Lorsque \(w > 1\), l'algorithme trouve une solution plus rapidement mais perd la garantie d'optimalité. L'objectif est d'itérer vers un \(w = 1\).
+    
+    \item \textbf{Algorithme AWA* (Anytime Weighted A*) :} Variante améliorée et anytime de l'algorithme WA*. L'objectif ici est de mettre à jour une borne supérieure de la solution. Cette approche permet à l'algorithme de fournir une solution valide à tout moment du processus de recherche et d'améliorer cette solution au fur et à mesure du temps ou des itérations disponibles.
+\end{itemize}
+
+Après implémentation de AWA*, et en utilisant $h_4$, on obtient les résultats suivants :
+
+\begin{minipage}{\dimexpr\linewidth-20pt}
+    \begin{lstlisting}[language=bash, caption={Résultats de l'exécution du programme de recherche de plus court chemin avec l'heuristique $h_4$ et \textit{AWA*} pour $k = 5$ piles et $n = 25$ blocs.}, label={lst:plus_court_chemin_results_h4_k4_n20}]
+        $ make run
+        [...]
+        g(5, 25, heuristic4): 
+        starting upper bound = 2147483647, weight = 2
+        Found solution of length 42 in 1539 iterations and 0.032113 seconds
+        Found solution of length 41 in 1678 iterations and 0.03426 seconds
+        Found solution of length 40 in 1774 iterations and 0.03594 seconds
+        Found solution of length 39 in 8472 iterations and 0.149428 seconds
+        Found solution of length 38 in 11642 iterations and 0.210004 seconds
+        Found solution of length 37 in 19889 iterations and 0.374129 seconds
+        Optimal solution of length 37 found in 1066478 iterations and 21.8191 seconds
+    \end{lstlisting}
+\end{minipage}
+
+On peut voir que la longueur de la solution optimale est de 37 actions.
+
