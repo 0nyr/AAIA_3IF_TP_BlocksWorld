@@ -21,17 +21,11 @@ StateGraph::StateGraph() {
 
     int heuristicChoice;
     std::cin >> heuristicChoice;
-    switch (heuristicChoice) {
-        case 0:
-            h = defaultHeuristic;
-            break;
-        case 1:
-            h = heuristic1;
-            break;
-        default:
-            std::cout << "Invalid heuristic choice\n";
-            exit(0);
+    if (heuristicChoice < 0 || heuristicChoice > 1) {
+        std::cout << "The heuristic choice must be 0 or 1\n";
+        exit(0);
     }
+    this->selectedHeuristic = heuristicChoice;
 }
 
 /**
@@ -40,8 +34,8 @@ StateGraph::StateGraph() {
  * @param nbBlocs The number of blocs
  */
 StateGraph::StateGraph(
-    int nbStacks, int nbBlocs, Heuristic h
-) : nbStacks(nbStacks), nbBlocs(nbBlocs), h(h) {}
+    int nbStacks, int nbBlocs, int selectedHeuristic
+) : nbStacks(nbStacks), nbBlocs(nbBlocs), selectedHeuristic(selectedHeuristic) {}
 
 /**
  * @brief Destroys the bloc world planning problem
@@ -92,7 +86,14 @@ int StateGraph::searchActions(const State &s) {
  * @return The heuristic value of state s
  */
 int StateGraph::heuristic(const State &s) const {
-    return this->h(s);
+    switch (this->selectedHeuristic) {
+        case 1:
+            return heuristic1(s);
+            break;
+        default:
+            return defaultHeuristic(s);
+            break;
+    }
 }
 
 /** 
@@ -143,9 +144,28 @@ void StateGraph::print(const State &s, const State &s_succ) {
     }
 }
 
+/** 
+ * @brief Set the heuristic function
+ * @param h The heuristic function
+ */
+void StateGraph::setHeuristic(int selectedHeuristic) {
+    this->selectedHeuristic = selectedHeuristic;
+}
 
+/**
+ * @brief Default heuristic function. Always returns 0.
+ */
+int StateGraph::defaultHeuristic(const State &s) const {
+    return 0;
+}
 
-
+/**
+ * @brief Heuristic function that returns the number of blocks not in the last stack.
+ */
+int StateGraph::heuristic1(const State &s) const {
+    int nbBlocsLastStack = s.getNbBlocs(nbStacks-1);
+    return nbBlocs - nbBlocsLastStack;
+}
 
 
 

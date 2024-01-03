@@ -64,7 +64,7 @@ void AStar::astar(const State &s0, StateGraph &g) {
         if (g.isFinal(s)) {
             std::cout << "Optimal solution of length " << map.at(s).g << " found in " << nbIter << " iterations and "
                       << static_cast<double>(clock() - start) / CLOCKS_PER_SEC << " seconds\n";
-            printSolution(g, s0, s, map);
+            //printSolution(g, s0, s, map);
             return;
         }
         int nbActions = g.searchActions(s);
