@@ -3,3 +3,12 @@
 
 % -- Introduction
 \section*{Introduction}
+Le problème du monde des blocs est un cas classique en intelligence artificielle et en planification automatique. Il consiste à manipuler un ensemble de blocs disposés sur différentes piles pour atteindre une configuration spécifique.
+
+Dans sa modélisation standard, le monde des blocs est représenté comme un problème de planification, où chaque configuration de blocs représente un état. Le but est de trouver une séquence d'actions (mouvements de blocs d'une pile à une autre) permettant de passer de l'état initial à l'état final désiré. Ceci est typiquement représenté sous la forme d'un graphe d'états, où chaque nœud correspond à une configuration de blocs et chaque arête à un mouvement possible entre deux configurations.
+
+Les algorithmes A* et AWA* sont utilisés pour résoudre ce problème en cherchant le chemin le plus court dans le graphe d'états. A* est un algorithme de recherche informé qui utilise des heuristiques pour guider la recherche vers l'état final de manière efficace. AWA*, quant à lui, est une variante d'A* permettant une recherche anytime, adaptative en fonction des ressources disponibles.
+
+Ce travail pratique (TP) se concentre sur l'application et la comparaison de ces algorithmes dans le contexte du monde des blocs. Nous discuterons en détail la mise en œuvre de ces algorithmes, l'importance de choisir des heuristiques adéquates, et comment elles peuvent drastiquement influencer les performances et l'efficacité de la recherche. L'objectif est de comprendre non seulement comment fonctionnent ces algorithmes de planification, mais aussi d'apprécier l'impact significatif des heuristiques pour guider la recherche vers des solutions optimales ou satisfaisantes dans des délais raisonnables.
+
+En somme, ce TP offre une exploration approfondie du monde des blocs comme un microcosme pour comprendre les défis et les stratégies de la planification et de l'optimisation dans les systèmes intelligents.

@@ -4,6 +4,13 @@
 
 ## Logs
 
+### Thu 04 Jan 2024
+
+Finished working on this TP.
+
++ [X] Write introduction.
++ [X] Add nice repo README image.
+
 ### Wed 03 Jan 2024
 
 + Corrected the text of question 1 to 15 in the report.
