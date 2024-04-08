@@ -52,13 +52,15 @@ On se retrouve alors avec une borne minimale du nombre maximum d'états possible
 
 \textit{Le graphe d'états $G$ est-il orienté ?}
 
-Oui, le graphe d'états $G$ est orienté. Chaque action menant d'un état $E$ à un état $E'$ représente un arc orienté dans le graphe.
+La question est ambigüe. Selon le contexte réel derrière la question, le graphe d'états $G$ peut être orienté ou non. En effet, si l'on considère le graphe d'états comme un graphe de planification, alors il est orienté. En revanche, si l'on considère le graphe d'états comme un graphe de recherche de plus court chemin, alors il n'est pas orienté.
 
 \subsection{Question 6}
 
 \textit{Quels sont les algorithmes qui peuvent être utilisés pour rechercher ce plus court chemin ?}
 
 Plusieurs algorithmes peuvent être utilisés pour rechercher le plus court chemin, tels que Bellman-Ford, BFS, DFS et Dijkstra, en fonction des spécificités du graphe (poids, orientation, etc.).
+
+Attention, on ne pourra pas utiliser l'algorithme TopoDAG car le graphe n'est pas un DAG (Directed Acyclic Graph) car il contient des cycles. En effet, par exemple, l'état final peut typiquement être atteint par plusieurs états prédédecesseurs différents.
 
 \subsection{Question 7}
 
@@ -142,7 +144,9 @@ L'heuristique $h_2$ est plus informée que l'heuristique $h_1$. En plus de compt
 
 \textit{L'heuristique $h_3$ est-elle admissible ?}
 
-L'heuristique $h_3$ est admissible. Elle compte non seulement les blocs qui ne sont pas sur la dernière pile, mais aussi le nombre de blocs qui doivent être déplacés pour permettre le placement d'autres blocs. Cette mesure fournit une sous-estimation du coût réel, car elle ne prend pas en compte les déplacements multiples ni l'ordre optimal de déplacement des blocs.
+L'heuristique $h_3$ n'est PAS admissible. Elle compte non seulement les blocs qui ne sont pas sur la dernière pile, mais aussi le nombre de blocs qui doivent être déplacés pour permettre le placement d'autres blocs. Il existe des cas dans lesquels $h_3$ fournit une surestimation du coût réel, car elle ne prend pas en compte les déplacements multiples ni l'ordre optimal de déplacement des blocs.
+
+Un contre exemple simple consiste à considérer un exemple avec 2 piles et 2 blocs sur la pile 0, de tel sorte que ces blocs peuvent être placés directement sur la pile 1. Dans ce cas, $h_3$ donnera une valeur de $2 + 1 = 3$ (2 blocs pas sur la dernière pile plus le bloc du dessous qui a un bloc au dessus de lui), alors que le coût réel est de 2. 
 
 \subsection{Question 15}
 
