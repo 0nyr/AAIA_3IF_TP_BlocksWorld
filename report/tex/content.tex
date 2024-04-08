@@ -42,7 +42,7 @@ Avec $v$ piles vides, il reste $k - v$ piles contenant des blocs. Chaque pile ac
 
 Le nombre total d'états est exponentiel par rapport au nombre de blocs et linéaire par rapport au nombre de piles. 
 
-Pour s'en convaincre, on peut considérer que pour atteindre l'état final, chaque bloc doit être déplacé au moins une fois. Considérons cette situation qui est donc une borne minimale du chemin optimal parmi le graphe d'états possibles. Dans ce cas, à chaque niveau de profondeur, on a vu avec la question 2 qu'il y a $k(k - 1)$ actions possibles au maximum. Ainsi, chaque état à chaque niveau possède $k(k - 1)$ états fils. On peut donc en déduire que le nombre total d'états est de l'ordre de $O(k(k - 1)^n) = O((k^2 - k)^n) = O(k^2n)$.
+Pour s'en convaincre, on peut considérer que pour atteindre l'état final, chaque bloc doit être déplacé au moins une fois. Considérons cette situation qui est donc une borne minimale du chemin optimal parmi le graphe d'états possibles. Dans ce cas, à chaque niveau de profondeur, on a vu avec la question 2 qu'il y a $k(k - 1)$ actions possibles au maximum. Ainsi, chaque état à chaque niveau possède $k(k - 1)$ états fils. On peut donc en déduire que le nombre total d'états est de l'ordre de $O(k(k - 1)^n) = O((k^2 - k)^n) = O(k^{2n})$.
 
 On se retrouve alors avec une borne minimale du nombre maximum d'états possible en $O(k^2n)$, ce qui est exponentiel par rapport au nombre de blocs et linéaire par rapport au nombre de piles.
 
