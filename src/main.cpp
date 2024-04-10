@@ -20,11 +20,14 @@ int main(){
     nbBlocs = 16;
     g = StateGraph(nbStacks, nbBlocs, 0);
 
-    for (int i = 2; i <= 4; i += 2) {
-        std::cout << "g(" << nbStacks << ", " << nbBlocs << ", heuristic" << i << "): " << std::endl;
-        g.setHeuristic(i);
-        AStar::astar(g.initialState(), g);
-    }
+    // for (int i = 2; i <= 4; i += 2) {
+    //     std::cout << "g(" << nbStacks << ", " << nbBlocs << ", heuristic" << i << "): " << std::endl;
+    //     g.setHeuristic(i);
+    //     AStar::astar(g.initialState(), g);
+    // }
+
+    g.setHeuristic(4);
+    AStar::astar(g.initialState(), g);
 
     // // even more advanced computation
     // nbBlocs = 20;

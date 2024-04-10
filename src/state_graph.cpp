@@ -272,13 +272,24 @@ int StateGraph::heuristic4(const State &s) const {
     }
     hSum = hSum + 2*nbBlocsLastStackToMove;
 
-    // heuristic 4
-    for(int i = 0; i<nbStacks-1; i++){
-        int maxStackLetter = 0;
-        for(int j = 0; j<s.getNbBlocs(i); j++){
-            if(maxStackLetter < s.getBloc(i, j)){
-                maxStackLetter = s.getBloc(i, j);
-            } else {
+    // heuristic 4 (tested and working alternative implementation)
+    // for(int i = 0; i<nbStacks-1; i++){
+    //     int maxStackLetter = 0;
+    //     for(int j = 0; j<s.getNbBlocs(i); j++){
+    //         if(maxStackLetter < s.getBloc(i, j)){
+    //             maxStackLetter = s.getBloc(i, j);
+    //         } else {
+    //             hSum++;
+    //         }
+    //     }
+    // }
+
+    // heuristic 4, alternative implementation
+    // count the number of misplaced blocks on all stacks except the last one
+    // WARN: check that the nb of stacks goes well from 0 to nbStacks-2 INCLUDED
+    for (int i = 0; i <= nbStacks-2; i++) {
+        for (int j = 0; j < s.getNbBlocs(i); j++) {
+            if (s.getBloc(i, j) > s.getBloc(i, j+1)) {
                 hSum++;
             }
         }
