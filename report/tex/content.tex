@@ -229,7 +229,7 @@ On a donc $h_2(E_1) > h_3(E_2) \land h_2(E_1) < h_3(E_2)$, ce qui montre que les
 
 \subsection{Question 16 : heuristique $h_4$}
 
-\textit{Quelle est la longueur (en nombre d'actions) de la solution optimale pour $n = 16$ blocs et $k = 4 piles$ ?}
+\textit{Quelle est la longueur (en nombre d'actions) de la solution optimale pour $n = 16$ blocs et $k = 4 $ piles ?}
 
 On commence par implémenter les trois heuristiques dans le programme de recherche de plus court chemin. On obtient nos premiers résultats :
 
@@ -326,6 +326,21 @@ On obtient les résultats suivants pour cette nouvelle heuristique :
 \end{minipage}
 
 Comme on peut s'y attendre, l'heuristique $h_4$ est plus performante que les trois premières heuristiques. Elle trouve la solution optimale en un nombre d'itérations et de temps d'exécution très faible. On peut donc la considérer comme la meilleure heuristique parmi les quatre. C'est cette heuristique qui sera utilisée pour la suite des expériences.
+
+Voici mes temps de calculs pour $n = 16$ blocs et $k = 4$ piles :
+
+\begin{minipage}{\dimexpr\linewidth-20pt}
+    \begin{lstlisting}[language=bash, caption={Résultats de l'exécution du programme de recherche de plus court chemin avec l'heuristique $h_4$ pour $k = 4$ piles et $n = 8$ blocs.}, label={lst:plus_court_chemin_results_h4_first_res}]
+        $ make run
+        [...]
+        g(4, 16, heuristic2): 
+        Optimal solution of length 25 found in 1566532 iterations and 17.2054 seconds
+        g(4, 16, heuristic4): 
+        Optimal solution of length 25 found in 16913 iterations and 0.892886 seconds
+    \end{lstlisting}
+\end{minipage}
+
+On peut voir que la longueur de la solution optimale est de 25 actions.
 
 \subsection{Question 17}
 

@@ -141,13 +141,14 @@ void AStar::awa_star(
 
                 // AWA* specific
                 if (g.isFinal(ss)) {
-                    upperBound = map.at(ss).cost;
+                    upperBound = map.at(ss).cost; // update upper bound
                     std::cout << "Found solution of length " 
                         << map.at(ss).cost << " in " << nbIter 
                         << " iterations and "
                         << static_cast<double>(clock() - start) / CLOCKS_PER_SEC << " seconds, upper bound = " 
                         << upperBound << ", weight = "
                         << weight << "\n";
+                    // DO NOT Return
                 } else if (
                     (map.at(ss).cost + g.heuristic(ss)) < upperBound
                 ) {
