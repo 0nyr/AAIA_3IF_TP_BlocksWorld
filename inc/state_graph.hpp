@@ -42,4 +42,5 @@ private:
     int heuristic2(const State &s) const;
     int heuristic3(const State &s) const;
     int heuristic4(const State &s) const;
+    int heuristic5(const State &s) const;
 };

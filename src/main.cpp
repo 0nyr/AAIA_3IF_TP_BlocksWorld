@@ -17,8 +17,8 @@ int main(){
     // }
 
     // more advanced computation
-    nbBlocs = 16;
-    g = StateGraph(nbStacks, nbBlocs, 0);
+    // nbBlocs = 16;
+    // g = StateGraph(nbStacks, nbBlocs, 0);
 
     // for (int i = 2; i <= 4; i += 2) {
     //     std::cout << "g(" << nbStacks << ", " << nbBlocs << ", heuristic" << i << "): " << std::endl;
@@ -26,8 +26,9 @@ int main(){
     //     AStar::astar(g.initialState(), g);
     // }
 
-    g.setHeuristic(4);
-    AStar::astar(g.initialState(), g);
+    // test with heuristic 4
+    // g.setHeuristic(4);
+    // AStar::astar(g.initialState(), g);
 
     // // even more advanced computation
     // nbBlocs = 20;
@@ -41,8 +42,16 @@ int main(){
     nbBlocs = 25;
     int weight = 2;
 
-    std::cout << "g(" << nbStacks << ", " << nbBlocs << ", heuristic" << 4 << "): " << std::endl;
-    g = StateGraph(nbStacks, nbBlocs, 4);
+    // AWA* with heuristic 4
+    int heuristic = 4;
+    std::cout << "AWA*(k = " << nbStacks << ", n = " << nbBlocs << ", heuristic n° = " << heuristic << "): " << std::endl;
+    g = StateGraph(nbStacks, nbBlocs, heuristic);
+    AStar::awa_star(g.initialState(), g, weight);
+
+    // AWA* with heuristic 5
+    heuristic = 5;
+    std::cout << "AWA*(k = " << nbStacks << ", n = " << nbBlocs << ", heuristic n° = " << heuristic << "): " << std::endl;
+    g = StateGraph(nbStacks, nbBlocs, heuristic);
     AStar::awa_star(g.initialState(), g, weight);
     
     return 0;

@@ -99,6 +99,9 @@ int StateGraph::heuristic(const State &s) const {
         case 4:
             return heuristic4(s);
             break;
+        case 5:
+            return heuristic5(s);
+            break;
         default:
             return defaultHeuristic(s);
             break;
@@ -242,7 +245,7 @@ int StateGraph::heuristic3(const State &s) const {
  * 
  *  State 1:       State 2:
  *  3  1           4  2  
- *  4  2  0        3  1  0
+ *  4  2  0        3  13  1  0  0
  *  #  #  #        #  #  #
  *
  * One can do by hand that State 2 is 7 moves away from the goal state, while State 1 is needs much more.
@@ -272,24 +275,73 @@ int StateGraph::heuristic4(const State &s) const {
     }
     hSum = hSum + 2*nbBlocsLastStackToMove;
 
-    // heuristic 4 (tested and working alternative implementation)
-    // for(int i = 0; i<nbStacks-1; i++){
-    //     int maxStackLetter = 0;
-    //     for(int j = 0; j<s.getNbBlocs(i); j++){
-    //         if(maxStackLetter < s.getBloc(i, j)){
-    //             maxStackLetter = s.getBloc(i, j);
-    //         } else {
-    //             hSum++;
-    //         }
-    //     }
-    // }
-
-    // heuristic 4, alternative implementation
-    // count the number of misplaced blocks on all stacks except the last one
+    // heuristic 4, simple implementation
+    // the optimal layout of a non-last stack is to have the blocks in increasing order (from bottom to top)
+    // this heuristic counts the number of pairwise inversions in each stack
     // WARN: check that the nb of stacks goes well from 0 to nbStacks-2 INCLUDED
     for (int i = 0; i <= nbStacks-2; i++) {
-        for (int j = 0; j < s.getNbBlocs(i); j++) {
+        // WARN: pairwise. So stop before the last element
+        for (int j = 0; j < s.getNbBlocs(i) - 1; j++) {
             if (s.getBloc(i, j) > s.getBloc(i, j+1)) {
+                hSum++;
+            }
+        }
+    }
+
+    return hSum;
+}
+
+/**
+ * @brief Smarter version of heuristic 4.
+ * 
+ * Consider the 2 following states:
+ * 
+ *  State 1:       State 2:
+ *  3              4
+ *  4              3
+ *  1              2
+ *  2              1
+ *  0              4
+ *  #  #  #        #  #  #
+ * 
+ * The previous implementation of heuristic 4 would return:
+ *  + State 1: 5 (heuristic 1) + 0 (heuristic 2) + 2 (heuristic 4) = 7
+ *  + State 2: 5 (heuristic 1) + 0 (heuristic 2) + 1 (heuristic 4) = 6
+ * 
+ * The first state could not be improved contrary to the second one.
+ * In this case, the fact that the largest block is at the bottom is 
+ * not taken into account. However all the other blocks, while in 
+ * increasing order, are not in the optimal order and will have to be
+ * moved to reach the goal state.
+ * 
+ * Hence, heuristic 5 not do pairwise comparisons but rather keep a 
+ * record of the largest block visited so far in each stack.
+*/
+int StateGraph::heuristic5(const State &s) const {
+    // heuristic 1
+    int nbBlocsLastStack = s.getNbBlocs(nbStacks-1);
+    int hSum = nbBlocs - nbBlocsLastStack;
+
+    // heuristic 2
+    int nbBlocsLastStackToMove = 0;
+    for (int i=0; i<nbBlocsLastStack; i++) {
+        if (s.getBloc(nbStacks-1, i) != 'a'+nbBlocs-1-i) {
+            // The block is not in the right place
+            // this block, and any after it, will have to be moved
+            nbBlocsLastStackToMove = nbBlocsLastStack - i;
+            break;
+        }
+    }
+    hSum = hSum + 2*nbBlocsLastStackToMove;
+
+    // heuristic 5, smarter version of heuristic 4
+    // keep track of the largest block visited so far in the stack.
+    for(int i = 0; i < nbStacks - 1; i++){
+        int maxStackLetter = 0; // starts always lower than any char letter, since 'a' = 97
+        for(int j = 0; j < s.getNbBlocs(i); j++){
+            if(maxStackLetter < s.getBloc(i, j)){
+                maxStackLetter = s.getBloc(i, j);
+            } else {
                 hSum++;
             }
         }
