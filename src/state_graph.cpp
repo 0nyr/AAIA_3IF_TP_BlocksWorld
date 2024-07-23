@@ -245,7 +245,7 @@ int StateGraph::heuristic3(const State &s) const {
  * 
  *  State 1:       State 2:
  *  3  1           4  2  
- *  4  2  0        3  13  1  0  0
+ *  4  2  0        3  1  0
  *  #  #  #        #  #  #
  *
  * One can do by hand that State 2 is 7 moves away from the goal state, while State 1 is needs much more.
@@ -297,10 +297,10 @@ int StateGraph::heuristic4(const State &s) const {
  * Consider the 2 following states:
  * 
  *  State 1:       State 2:
- *  3              4
- *  4              3
- *  1              2
- *  2              1
+ *  3              3
+ *  4              2
+ *  1              1
+ *  2              0
  *  0              4
  *  #  #  #        #  #  #
  * 

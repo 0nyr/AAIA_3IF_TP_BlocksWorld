@@ -334,13 +334,17 @@ Voici mes temps de calculs pour $n = 16$ blocs et $k = 4$ piles :
         $ make run
         [...]
         g(4, 16, heuristic2): 
-        Optimal solution of length 25 found in 1566532 iterations and 17.2054 seconds
+        Optimal solution of length 25 found in 1566532 iterations and 21.5822 seconds
         g(4, 16, heuristic4): 
-        Optimal solution of length 25 found in 16913 iterations and 0.892886 seconds
+        Optimal solution of length 25 found in 19890 iterations and 1.32529 seconds
     \end{lstlisting}
 \end{minipage}
 
 On peut voir que la longueur de la solution optimale est de 25 actions.
+
+\subsection{Question 16 bis}
+
+On peut encore améliorer l'heuristique $h_4$ en une nouvelle version $h_5$. En effet, considérons les états $E_1$ et $E_2$ suivants :
 
 \subsection{Question 17}
 
@@ -371,21 +375,39 @@ Afin de trouver la longueur de la solution optimale pour autant de calculs néce
     \item \textbf{Algorithme AWA* (Anytime Weighted A*) :} Variante améliorée et anytime de l'algorithme WA*. L'objectif ici est de mettre à jour une borne supérieure de la solution. Cette approche permet à l'algorithme de fournir une solution valide à tout moment du processus de recherche et d'améliorer cette solution au fur et à mesure du temps ou des itérations disponibles.
 \end{itemize}
 
-Après implémentation de AWA*, et en utilisant $h_4$, on obtient les résultats suivants :
+Après implémentation de AWA*, et en utilisant $h_4$ et $h_5$, on obtient les résultats suivants :
 
 \begin{minipage}{\dimexpr\linewidth-20pt}
     \begin{lstlisting}[language=bash, caption={Résultats de l'exécution du programme de recherche de plus court chemin avec l'heuristique $h_4$ et \textit{AWA*} pour $k = 5$ piles et $n = 25$ blocs.}, label={lst:plus_court_chemin_results_h4_k4_n20}]
         $ make run
         [...]
-        g(5, 25, heuristic4): 
-        starting upper bound = 2147483647, weight = 2
-        Found solution of length 42 in 1539 iterations and 0.032113 seconds
-        Found solution of length 41 in 1678 iterations and 0.03426 seconds
-        Found solution of length 40 in 1774 iterations and 0.03594 seconds
-        Found solution of length 39 in 8472 iterations and 0.149428 seconds
-        Found solution of length 38 in 11642 iterations and 0.210004 seconds
-        Found solution of length 37 in 19889 iterations and 0.374129 seconds
-        Optimal solution of length 37 found in 1066478 iterations and 21.8191 seconds
+        AWA*(k = 5, n = 25, heuristic number = 4): 
+        starting upper bound = 2147483647
+        Found solution of length 44 in 884 iterations and 0.02478 seconds, upper bound = 44, weight = 2
+        Found solution of length 43 in 1152 iterations and 0.029052 seconds, upper bound = 43, weight = 2
+        Found solution of length 42 in 1829 iterations and 0.040759 seconds, upper bound = 42, weight = 2
+        Found solution of length 41 in 4140 iterations and 0.083494 seconds, upper bound = 41, weight = 2
+        Found solution of length 40 in 6950 iterations and 0.13297 seconds, upper bound = 40, weight = 2
+        Found solution of length 39 in 40141 iterations and 0.809311 seconds, upper bound = 39, weight = 2
+        Found solution of length 38 in 100838 iterations and 2.044 seconds, upper bound = 38, weight = 2
+        Found solution of length 37 in 173164 iterations and 3.49765 seconds, upper bound = 37, weight = 2
+        Optimal solution of length 37 found in 2460289 iterations and 51.5927 seconds, weight = 2
+    \end{lstlisting}
+\end{minipage}
+
+\begin{minipage}{\dimexpr\linewidth-20pt}
+    \begin{lstlisting}[language=bash, caption={Résultats de l'exécution du programme de recherche de plus court chemin avec l'heuristique $h_5$ et \textit{AWA*} pour $k = 5$ piles et $n = 25$ blocs.}, label={lst:plus_court_chemin_results_h4_k4_n20}]
+        $ make run
+        [...]
+        AWA*(k = 5, n = 25, heuristic number = 5): 
+        starting upper bound = 2147483647
+        Found solution of length 42 in 1539 iterations and 0.027061 seconds, upper bound = 42, weight = 2
+        Found solution of length 41 in 1678 iterations and 0.029173 seconds, upper bound = 41, weight = 2
+        Found solution of length 40 in 1774 iterations and 0.030814 seconds, upper bound = 40, weight = 2
+        Found solution of length 39 in 8472 iterations and 0.148832 seconds, upper bound = 39, weight = 2
+        Found solution of length 38 in 11642 iterations and 0.203649 seconds, upper bound = 38, weight = 2
+        Found solution of length 37 in 19889 iterations and 0.353376 seconds, upper bound = 37, weight = 2
+        Optimal solution of length 37 found in 1066478 iterations and 19.9276 seconds, weight = 2
     \end{lstlisting}
 \end{minipage}
 
