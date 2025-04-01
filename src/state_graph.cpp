@@ -292,7 +292,7 @@ int StateGraph::heuristic4(const State &s) const {
 }
 
 /**
- * @brief Smarter version of heuristic 4.
+ * @brief Smarter version of heuristic 4: heuristic 5.
  * 
  * Consider the 2 following states:
  * 
