@@ -18,4 +18,6 @@ Time to enjoy a makefile...
 
 `make build`: Build by compiling project.
 
+`make rebuild`: Rebuild (recompile) the project.
+
 `make run`: Run compiled executable.
