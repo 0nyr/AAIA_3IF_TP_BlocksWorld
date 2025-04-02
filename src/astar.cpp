@@ -124,10 +124,23 @@ void AStar::awa_star(
         if (!map[s].isGrey) {
             continue; // ignore already visited states
         }
-        nbIter++;
+        if (g.isFinal(s) && map.at(s).cost < upperBound) {
+            upperBound = map.at(s).cost; // update upper bound
+            std::cout << "Found solution of length " 
+                << map.at(s).cost << " in " << nbIter 
+                << " iterations and "
+                << static_cast<double>(clock() - start) / CLOCKS_PER_SEC << " seconds, upper bound = " 
+                << upperBound << ", weight = "
+                << weight << "\n";
+            // DO NOT Return, AWA* needs to continue
+        }
+        if (map.at(s).cost + g.heuristic(s) >= upperBound) { // WARN: do NOT use weight here
+            continue; // ignore states that are too expensive
+        }
+        map[s].isGrey = false; // set state to visited (black)
 
         // in AWA*, removed check if the state is final here
-
+        nbIter++;
         int nbActions = g.searchActions(s);
         for (int i = 0; i < nbActions; i++) {
             State ss = g.transition(s, i);
@@ -139,26 +152,13 @@ void AStar::awa_star(
                 map[ss].cost = map[s].cost + g.getCost(s, i);
                 map[ss].pred = s;
 
-                // AWA* specific
-                if (g.isFinal(ss)) {
-                    upperBound = map.at(ss).cost; // update upper bound
-                    std::cout << "Found solution of length " 
-                        << map.at(ss).cost << " in " << nbIter 
-                        << " iterations and "
-                        << static_cast<double>(clock() - start) / CLOCKS_PER_SEC << " seconds, upper bound = " 
-                        << upperBound << ", weight = "
-                        << weight << "\n";
-                    // DO NOT Return
-                } else if (
-                    (map.at(ss).cost + g.heuristic(ss)) < upperBound
-                ) {
-                    q.push(
-                        {
-                            ss, 
-                            map[ss].cost + (weight * g.heuristic(ss))
-                        }
-                    );
-                } 
+                q.push(
+                    {
+                        ss, 
+                        map[ss].cost + (weight * g.heuristic(ss))
+                    }
+                );
+                
             }
         }
         map[s].isGrey = false; // set state to visited (black)

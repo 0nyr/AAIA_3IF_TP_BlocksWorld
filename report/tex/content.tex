@@ -54,6 +54,8 @@ On se retrouve alors avec une borne minimale du nombre maximum d'états possible
 
 La question est ambigüe. Selon le contexte réel derrière la question, le graphe d'états $G$ peut être orienté ou non. En effet, si l'on considère le graphe d'états comme un graphe de planification, alors il est orienté. En revanche, si l'on considère le graphe d'états comme un graphe de recherche de plus court chemin, alors il n'est pas orienté.
 
+Ici, on attend "non orienté" comme réponse, car le graphe d'états est généralement utilisé pour trouver le plus court chemin entre l'état initial et l'état final, et n'est donc pas orienté.
+
 \subsection{Question 6}
 
 \textit{Quels sont les algorithmes qui peuvent être utilisés pour rechercher ce plus court chemin ?}
@@ -363,9 +365,11 @@ On exécute le programme de recherche de plus court chemin avec l'heuristique $h
 
 La longueur de la solution optimale est de 32 actions.
 
-\subsection{Question 18}
+\section{Partie 4 : Implémentation de AWA*}
 
-\textit{Quelle est la longueur (en nombre d'actions) de la solution optimale pour $n = 25$ blocs et $k = 5$ piles ?}
+Cette section présente l'algorithme A* ainsi que deux de ses variantes : WA* (Weighted A*) et AWA* (Anytime WA*). Ces algorithmes sont utilisés pour la recherche de chemins optimaux dans un graphe à partir d'un état initial vers un ou plusieurs états finaux, en combinant le coût déjà accumulé et une estimation du coût restant.
+
+\section{A* et ses versions WA* et AWA*}
 
 Afin de trouver la longueur de la solution optimale pour autant de calculs nécessaires, on transforme le programme de recherche de plus court chemin en passant de \textit{A*} à \textit{AWA*} (Anytime Weighted A*). AWA* est une variante de A* qui permet de trouver une solution optimale en un temps limité. Il s'agit d'une version pondérée de A*, où le poids $w$ est défini par l'utilisateur. Ainsi, AWA* peut être utilisé pour trouver une solution optimale en un temps limité, ou pour trouver une solution sous-optimale en un temps limité.
 
@@ -374,6 +378,116 @@ Afin de trouver la longueur de la solution optimale pour autant de calculs néce
     
     \item \textbf{Algorithme AWA* (Anytime Weighted A*) :} Variante améliorée et anytime de l'algorithme WA*. L'objectif ici est de mettre à jour une borne supérieure de la solution. Cette approche permet à l'algorithme de fournir une solution valide à tout moment du processus de recherche et d'améliorer cette solution au fur et à mesure du temps ou des itérations disponibles.
 \end{itemize}
+
+\subsection{Algorithme A*}
+
+L'algorithme A* repose sur une fonction d'évaluation 
+\[
+f(n) = g(n) + h(n),
+\]
+où :
+\begin{itemize}
+    \item $g(n)$ représente le coût du chemin depuis l'état initial jusqu'à l'état $n$,
+    \item $h(n)$ est une fonction heuristique qui estime le coût minimal restant pour atteindre un état final.
+\end{itemize}
+
+Le pseudocode de l'algorithme A* est présenté ci-dessous :
+
+\begin{algorithm}[H]
+    \caption{A*}
+    \begin{algorithmic}[1]
+    \State $OPEN \gets \{s_{init}\}$
+    \State $CLOSED \gets \emptyset$
+    \While{$OPEN \neq \emptyset$}
+        \State Sélectionner l'état $n \in OPEN$ tel que $f(n)$ est minimal
+        \If{$n$ est un état final}
+            \State \Return le chemin de $s_{init}$ à $n$
+        \EndIf
+        \State Retirer $n$ de $OPEN$ et l'ajouter à $CLOSED$
+        \For{chaque successeur $s$ de $n$}
+            \If{$s$ n'est pas dans $CLOSED$ ou si une meilleure solution est trouvée pour $s$}
+                \State Mettre à jour $g(s)$ et calculer $f(s) = g(s) + h(s)$
+                \State Ajouter $s$ à $OPEN$
+            \EndIf
+        \EndFor
+    \EndWhile
+    \State \Return \textit{échec} (aucune solution n'est trouvée)
+    \end{algorithmic}
+\end{algorithm}
+
+\subsection{Version WA* (Weighted A*)}
+
+WA* est une variante d'A* dans laquelle la fonction heuristique est surpondérée par un paramètre $w \geq 1$. La fonction d'évaluation devient :
+\[
+f(n) = g(n) + w \times h(n).
+\]
+Lorsque $w = 1$, on retrouve l'algorithme A*. L'utilisation d'un $w>1$ tend à accélérer la recherche en favorisant l'exploration des nœuds proches de la solution, mais cela peut compromettre l'optimalité de la solution trouvée.
+
+Le pseudocode de WA* est similaire à celui d'A*, en remplaçant simplement la fonction $f$ :
+
+\begin{algorithm}[H]
+    \caption{WA*}
+    \begin{algorithmic}[1]
+    \State $OPEN \gets \{s_{init}\}$
+    \State $CLOSED \gets \emptyset$
+    \While{$OPEN \neq \emptyset$}
+        \State Sélectionner l'état $n \in OPEN$ tel que $f(n) = g(n) + w \times h(n)$ est minimal
+        \If{$n$ est un état final}
+            \State \Return le chemin de $s_{init}$ à $n$
+        \EndIf
+        \State Retirer $n$ de $OPEN$ et l'ajouter à $CLOSED$
+        \For{chaque successeur $s$ de $n$}
+            \If{$s$ n'est pas dans $CLOSED$ ou si une meilleure solution est trouvée pour $s$}
+                \State Mettre à jour $g(s)$ et calculer $f(s) = g(s) + w \times h(s)$
+                \State Ajouter $s$ à $OPEN$
+            \EndIf
+        \EndFor
+    \EndWhile
+    \State \Return \textit{échec}
+    \end{algorithmic}
+\end{algorithm}
+
+\subsection{Version Anytime WA* (AWA*)}
+
+L'approche Anytime WA* (AWA*) vise à fournir des solutions de manière progressive, sans attendre la fin complète de l'exploration. L'idée est la suivante :
+\begin{itemize}
+    \item On initialise une borne supérieure $B$ à $+\infty$.
+    \item Chaque fois qu'un état final $n$ est généré et que le coût $g(n)$ est inférieur à $B$, le chemin menant à $n$ est immédiatement enregistré comme solution et la borne $B$ est mise à jour par $g(n)$.
+    \item Cette borne permet d'élaguer l'arbre de recherche en éliminant les états dont la valeur $f(n)$ excède $B$, réduisant ainsi l'espace de recherche et améliorant l'efficacité globale.
+\end{itemize}
+
+Le pseudocode de l'algorithme AWA* est présenté ci-dessous :
+
+\begin{algorithm}[H]
+    \caption{AWA*}
+    \begin{algorithmic}[1]
+    \State $OPEN \gets \{s_{init}\}$
+    \State $CLOSED \gets \emptyset$
+    \State $B \gets +\infty$
+    \While{$OPEN \neq \emptyset$}
+        \State Sélectionner l'état $n \in OPEN$ tel que $f(n) = g(n) + w \times h(n)$ est minimal
+        \If{$n$ est un état final \textbf{et} $g(n) < B$}
+            \State Enregistrer le chemin de $s_{init}$ à $n$
+            \State Mettre à jour la borne supérieure $B \gets g(n)$
+        \EndIf
+        \If{$f(n) \geq B$}
+            \State \textbf{passer} (élagage de l'état)
+        \EndIf
+        \State Retirer $n$ de $OPEN$ et l'ajouter à $CLOSED$
+        \For{chaque successeur $s$ de $n$}
+            \If{$s$ n'est pas dans $CLOSED$ ou si une meilleure solution est trouvée pour $s$}
+                \State Mettre à jour $g(s)$ et calculer $f(s) = g(s) + w \times h(s)$
+                \State Ajouter $s$ à $OPEN$
+            \EndIf
+        \EndFor
+    \EndWhile
+    \State \Return la meilleure solution enregistrée
+    \end{algorithmic}
+\end{algorithm}
+
+\subsection{Question 18}
+
+\textit{Quelle est la longueur (en nombre d'actions) de la solution optimale pour $n = 25$ blocs et $k = 5$ piles ?}
 
 Après implémentation de AWA*, et en utilisant $h_4$ et $h_5$, on obtient les résultats suivants :
 

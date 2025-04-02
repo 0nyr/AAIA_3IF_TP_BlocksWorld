@@ -45,10 +45,10 @@ int main(){
     // g = StateGraph(nbStacks, nbBlocs, 4);
     // AStar::astar(g.initialState(), g);
 
-    // // AWA* computations
-    // nbStacks = 5;
-    // nbBlocs = 25;
-    // int weight = 2;
+    // AWA* computations
+    nbStacks = 5;
+    nbBlocs = 25;
+    int weight = 2;
 
     // // AWA* with heuristic 4
     // int heuristic = 4;
@@ -56,11 +56,11 @@ int main(){
     // g = StateGraph(nbStacks, nbBlocs, heuristic);
     // AStar::awa_star(g.initialState(), g, weight);
 
-    // // AWA* with heuristic 5
-    // heuristic = 5;
-    // std::cout << "AWA*(k = " << nbStacks << ", n = " << nbBlocs << ", heuristic number = " << heuristic << "): " << std::endl;
-    // g = StateGraph(nbStacks, nbBlocs, heuristic);
-    // AStar::awa_star(g.initialState(), g, weight);
+    // AWA* with heuristic 5
+    int heuristic = 5;
+    std::cout << "AWA*(k = " << nbStacks << ", n = " << nbBlocs << ", heuristic number = " << heuristic << "): " << std::endl;
+    g = StateGraph(nbStacks, nbBlocs, heuristic);
+    AStar::awa_star(g.initialState(), g, weight);
     
     return 0;
 }
